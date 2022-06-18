@@ -185,6 +185,16 @@ func Test_deckRoutes_drawCards(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:       "Not Found Error",
+			statusCode: http.StatusNotFound,
+			wantErr:    usecase.DeckNotFoundErr,
+		},
+		{
+			name:       "Not Found Error",
+			statusCode: http.StatusInternalServerError,
+			wantErr:    errors.New("error"),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

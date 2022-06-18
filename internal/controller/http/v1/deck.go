@@ -34,6 +34,14 @@ type newDeckResponse struct {
 	Remaining int    `json:"remaining"`
 }
 
+// newDeck godoc
+// @Summary      Creates a new deck.
+// @Description  Creates a new deck with cards.
+// @Produce      json
+// @Param        shuffle  query     bool    false  "Activate or deactivate cards shuffling."                                                                      default(false)
+// @Param        cards    query     string  false  "Comma separated card codes to create a custom deck. If not sent, the regular 52 cards deck will be created."  example(AS,2S)
+// @Success      200      {object}  newDeckResponse
+// @Router       /decks [post]
 func (d *deckRoutes) newDeck(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	shuffle := false
@@ -57,6 +65,15 @@ func (d *deckRoutes) newDeck(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, resp, http.StatusCreated)
 }
 
+// openDeck godoc
+// @Summary      Opens a deck.
+// @Description  Opens a deck, showing all its cards.
+// @Produce      json
+// @Param        id   path      string  true  "Deck id"
+// @Success      200  {object}  entity.Deck
+// @Failure      404     {object}  response.Error
+// @Failure      500     {object}  response.Error
+// @Router       /decks/{id} [get]
 func (d *deckRoutes) openDeck(w http.ResponseWriter, r *http.Request) {
 	deckID := chi.URLParam(r, "deckID")
 
@@ -78,6 +95,16 @@ type drawCardsResp struct {
 	Cards []entity.Card `json:"cards"`
 }
 
+// drawCards godoc
+// @Summary      Draw cards from a deck.
+// @Description  Draw an amount of cards given a deck.
+// @Produce      json
+// @Param        id      path      string  true   "Deck id"
+// @Param        amount  query     int     false  "Amount of cards to draw"  default(1)
+// @Success      200     {object}  drawCardsResp
+// @Failure      404  {object}  response.Error
+// @Failure      500  {object}  response.Error
+// @Router       /decks/withdrawals/{id} [get]
 func (d *deckRoutes) drawCards(w http.ResponseWriter, r *http.Request) {
 	deckID := chi.URLParam(r, "deckID")
 	amount := 1
@@ -89,6 +116,11 @@ func (d *deckRoutes) drawCards(w http.ResponseWriter, r *http.Request) {
 
 	cards, err := d.deck.DrawCards(deckID, amount)
 	if err != nil {
+		if errors.Is(err, usecase.DeckNotFoundErr) {
+			response.JSONError(w, err.Error(), http.StatusNotFound)
+			return
+		}
+
 		response.JSONError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

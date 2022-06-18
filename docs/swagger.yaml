@@ -1,0 +1,131 @@
+basePath: /v1
+definitions:
+  entity.Card:
+    properties:
+      code:
+        type: string
+      suit:
+        type: string
+      value:
+        type: string
+    type: object
+  entity.Deck:
+    properties:
+      cards:
+        items:
+          $ref: '#/definitions/entity.Card'
+        type: array
+      deck_id:
+        type: string
+      remaining:
+        type: integer
+      shuffled:
+        type: boolean
+    type: object
+  response.Error:
+    properties:
+      message:
+        type: string
+    type: object
+  v1.drawCardsResp:
+    properties:
+      cards:
+        items:
+          $ref: '#/definitions/entity.Card'
+        type: array
+    type: object
+  v1.newDeckResponse:
+    properties:
+      deck_id:
+        type: string
+      remaining:
+        type: integer
+      shuffled:
+        type: boolean
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a server to handle a cards deck.
+  title: Decks API
+  version: "1.0"
+paths:
+  /decks:
+    post:
+      description: Creates a new deck with cards.
+      parameters:
+      - default: false
+        description: Activate or deactivate cards shuffling.
+        in: query
+        name: shuffle
+        type: boolean
+      - description: Comma separated card codes to create a custom deck. If not sent,
+          the regular 52 cards deck will be created.
+        example: AS,2S
+        in: query
+        name: cards
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.newDeckResponse'
+      summary: Creates a new deck.
+  /decks/{id}:
+    get:
+      description: Opens a deck, showing all its cards.
+      parameters:
+      - description: Deck id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Deck'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Error'
+      summary: Opens a deck.
+  /decks/withdrawals/{id}:
+    get:
+      description: Draw an amount of cards given a deck.
+      parameters:
+      - description: Deck id
+        in: path
+        name: id
+        required: true
+        type: string
+      - default: 1
+        description: Amount of cards to draw
+        in: query
+        name: amount
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.drawCardsResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Error'
+      summary: Draw cards from a deck.
+swagger: "2.0"
