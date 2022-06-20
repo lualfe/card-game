@@ -12,6 +12,8 @@ import (
 	v1 "github.com/lualfe/card-game/internal/controller/http/v1"
 )
 
+// Run create all the main objects and run the
+// application.
 func Run() {
 	m := chi.NewRouter()
 
