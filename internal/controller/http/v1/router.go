@@ -16,8 +16,8 @@ import (
 // @host      localhost:8080
 // @BasePath  /v1
 
-// Routes starts the application routes.
-func Routes(m *chi.Mux, deck usecase.DeckManager) {
+// StartRoutes starts the application routes.
+func StartRoutes(m *chi.Mux, deck usecase.DeckManager) {
 	m.Mount("/swagger", httpSwagger.WrapHandler)
 	createDeckRoutes(m, deck)
 }

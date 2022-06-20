@@ -20,7 +20,7 @@ func Run() {
 	deckRepo := make(repo.Deck)
 	dm := usecase.NewDeckManager(deckRepo)
 
-	v1.Routes(m, dm)
+	v1.StartRoutes(m, dm)
 
 	log.Println("Listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", m))
