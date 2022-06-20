@@ -9,8 +9,8 @@ type DeckManager interface {
 	DrawCards(id string, amount int) ([]entity.Card, error)
 }
 
-// DeckStore is the interface for the deck store.
-type DeckStore interface {
+// DeckRepo is the interface for the deck store.
+type DeckRepo interface {
 	Save(deck entity.Deck)
 	Get(id string) (entity.Deck, error)
 }

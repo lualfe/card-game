@@ -20,14 +20,14 @@ var (
 
 // Deck is a use case to manage the game deck.
 type Deck struct {
-	deckStore DeckStore
-	shuffler  func([]entity.Card)
+	deckRepo DeckRepo
+	shuffler func([]entity.Card)
 }
 
 // NewDeckManager creates a new Deck.
-func NewDeckManager(store DeckStore) *Deck {
+func NewDeckManager(store DeckRepo) *Deck {
 	return &Deck{
-		deckStore: store,
+		deckRepo: store,
 		shuffler: func(cards []entity.Card) {
 			rand.Seed(time.Now().UnixNano())
 			rand.Shuffle(len(cards), func(i, j int) {
@@ -63,7 +63,7 @@ func (d *Deck) New(shuffle bool, cardCodes []string) entity.Deck {
 		Cards:     deckCards,
 	}
 
-	d.deckStore.Save(deck)
+	d.deckRepo.Save(deck)
 
 	return deck
 }
@@ -71,7 +71,7 @@ func (d *Deck) New(shuffle bool, cardCodes []string) entity.Deck {
 // Open returns a deck or an error in case the
 // deck can't be found.
 func (d *Deck) Open(id string) (entity.Deck, error) {
-	deck, err := d.deckStore.Get(id)
+	deck, err := d.deckRepo.Get(id)
 	if err != nil {
 		if errors.Is(err, repo.DeckNotFoundErr) {
 			return entity.Deck{}, fmt.Errorf("%w with id %s", DeckNotFoundErr, id)
@@ -84,7 +84,7 @@ func (d *Deck) Open(id string) (entity.Deck, error) {
 
 // DrawCards gets cards from the top of the deck.
 func (d *Deck) DrawCards(id string, amount int) ([]entity.Card, error) {
-	deck, err := d.deckStore.Get(id)
+	deck, err := d.deckRepo.Get(id)
 	if err != nil {
 		if errors.Is(err, repo.DeckNotFoundErr) {
 			return nil, fmt.Errorf("%w with id %s", DeckNotFoundErr, id)
@@ -104,7 +104,7 @@ func (d *Deck) DrawCards(id string, amount int) ([]entity.Card, error) {
 	deck.Cards = deck.Cards[amount:]
 	deck.Remaining = len(deck.Cards)
 
-	d.deckStore.Save(deck)
+	d.deckRepo.Save(deck)
 
 	return cards, nil
 }

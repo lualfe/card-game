@@ -19,7 +19,7 @@ func (s *stubDeckStore) Get(id string) (entity.Deck, error) {
 	return s.get(id)
 }
 
-func (s *stubDeckStore) Save(deck entity.Deck) {}
+func (s *stubDeckStore) Save(_ entity.Deck) {}
 
 func TestDeck_New(t *testing.T) {
 	customDeck := []entity.Card{
@@ -109,7 +109,7 @@ func TestDeck_New(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			shufflerCalled := false
 			d := &Deck{
-				deckStore: &stubDeckStore{},
+				deckRepo: &stubDeckStore{},
 				shuffler: func(cards []entity.Card) {
 					shufflerCalled = true
 				},
@@ -162,7 +162,7 @@ func TestDeck_Open(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			d := &Deck{
-				deckStore: &stubDeckStore{
+				deckRepo: &stubDeckStore{
 					get: func(id string) (entity.Deck, error) {
 						if tt.wantErr != nil {
 							return entity.Deck{}, tt.getErr
@@ -234,7 +234,7 @@ func TestDeck_DrawCards(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			d := &Deck{
-				deckStore: &stubDeckStore{
+				deckRepo: &stubDeckStore{
 					get: func(id string) (entity.Deck, error) {
 						if tt.wantErr != nil {
 							return entity.Deck{}, tt.getErr
